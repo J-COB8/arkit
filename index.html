@@ -1,26 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>AR Viewer</title>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <style>
-      body { margin: 0; }
-      model-viewer {
-        width: 100vw;
-        height: 100vh;
-      }
-    </style>
-  </head>
-  <body>
-    <model-viewer
-      src="./models/SkyDonut.glb"
-      ios-src="./models/SkyDonut.usdz"
-      ar
-      ar-modes="scene-viewer quick-look webxr"
-      auto-rotate
-      camera-controls
-      alt="Modelo 3D"
-    ></model-viewer>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<title>AR Donut Viewer</title>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<style>
+body { 
+  margin: 0; 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* This keeps child nodes hidden while the element loads */
+:not(:defined) > * {
+  display: none;
+}
+
+model-viewer {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#ar-button {
+  background-color: #4285f4;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  padding: 16px 32px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
+  text-align: center;
+}
+
+#ar-button:hover {
+  background-color: #3367d6;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.5);
+}
+
+#ar-button:active {
+  transform: translateX(-50%) translateY(0px);
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+#ar-button:focus {
+  outline: none;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4), 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+/* AR status indicators */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+model-viewer > #ar-prompt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  font-size: 18px;
+  text-align: center;
+  display: none;
+  animation: pulse 2s infinite;
+}
+
+model-viewer[ar-status="session-started"] > #ar-prompt {
+  display: block;
+}
+
+model-viewer > #ar-failure {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ff4444;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  font-size: 16px;
+  text-align: center;
+  display: none;
+  font-weight: 600;
+}
+
+model-viewer[ar-tracking="not-tracking"] > #ar-failure {
+  display: block;
+}
+
+/* Loading indicator */
+model-viewer:not([loaded]) {
+  position: relative;
+}
+
+model-viewer:not([loaded])::before {
+  content: "Loading 3D Model...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  z-index: 100;
+}
+</style>
+</head>
+<body>
+<model-viewer
+  src="/models/SkyDonut.glb"
+  ios-src="/models/SkyDonut.usdz"
+  ar
+  ar-modes="scene-viewer quick-look webxr"
+  auto-rotate
+  camera-controls
+  shadow-intensity="1"
+  touch-action="pan-y"
+  alt="Sky Donut 3D Model"
+>
+  
+  <button slot="ar-button" id="ar-button">
+    🥽 View in AR
+  </button>
+
+  <div id="ar-prompt">
+    👆 Point your device at a surface to place the donut
+  </div>
+
+  <div id="ar-failure">
+    ❌ AR tracking lost! Try moving your device slowly
+  </div>
+
+</model-viewer>
+
+</body>
 </html>
